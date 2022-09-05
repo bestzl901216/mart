@@ -10,7 +10,7 @@
     <name>mart</name>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>${maven.compiler.source}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -18,8 +18,9 @@
 
         <cola.components.version>4.4.0-SNAPSHOT</cola.components.version>
 
-        <spring-boot.version>2.7.2</spring-boot.version>
+        <spring-boot.version>2.7.3</spring-boot.version>
         <mybatis-starter.version>2.2.2</mybatis-starter.version>
+        <mybatis.plus.version>3.5.1</mybatis.plus.version>
     </properties>
 
     <modules>
@@ -93,7 +94,12 @@
                 <artifactId>mybatis-spring-boot-starter</artifactId>
                 <version>${mybatis-starter.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mybatis.plus.version}</version>
+                <type>jar</type>
+            </dependency>
             <!--Validation API-->
             <!--
                 - javax.validation:javax.validation
@@ -108,13 +114,6 @@
             </dependency>
             <!--Validation API End -->
 
-            <!-- Misc -->
-            <dependency>
-                <groupId>com.alibaba</groupId>
-                <artifactId>fastjson</artifactId>
-                <version>1.2.83</version>
-            </dependency>
-            <!-- Misc End -->
         </dependencies>
     </dependencyManagement>
 
