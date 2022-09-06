@@ -1,5 +1,6 @@
 package com.firm.wham.infrastructure.account;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -14,15 +15,17 @@ public class AccountGateway {
     private final AccountMapper accountMapper;
 
     /**
-     * 根据账号名称查询账号信息，未找到时抛出异常
+     * 查询账号信息
      *
      * @param name 账号名
      * @return 账号信息
      */
-    AccountDo get(String name) {
-        LambdaQueryWrapper<AccountDo> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(AccountDo::getName, name);
-        // todo 抛出異常
+    public AccountDO findBy(String name) {
+        if (StrUtil.isBlank(name)) {
+            return null;
+        }
+        LambdaQueryWrapper<AccountDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(AccountDO::getName, name);
         return accountMapper.selectOne(queryWrapper);
     }
 }

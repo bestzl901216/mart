@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName("account")
-public class AccountDo {
+public class AccountDO {
     private Integer id;
     private String name;
     private String md5Password;
