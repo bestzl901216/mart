@@ -28,5 +28,10 @@
             <artifactId>cola-component-exception</artifactId>
         </dependency>
         <!-- COLA components End-->
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+        </dependency>
     </dependencies>
 </project>
