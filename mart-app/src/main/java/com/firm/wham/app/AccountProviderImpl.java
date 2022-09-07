@@ -7,8 +7,7 @@ import com.firm.wham.client.api.AccountProvider;
 import com.firm.wham.client.dto.AccountSignInCmd;
 import com.firm.wham.client.dto.AccountSignOutCmd;
 import com.firm.wham.client.dto.AccountSignUpCmd;
-import com.firm.wham.domain.account.AccountEntity;
-import com.firm.wham.domain.account.AccountRepository;
+import com.firm.wham.domain.account.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,25 +20,21 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class AccountProviderImpl implements AccountProvider {
 
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
     @Override
     public Response signUp(AccountSignUpCmd cmd) {
-        return null;
+        throw new BizException("功能未实现");
     }
 
     @Override
     public Response signIn(AccountSignInCmd cmd) {
-        AccountEntity accountEntity = accountRepository.getBy(cmd.getName());
-        boolean pass = accountEntity.verifyPassword(cmd.getPassword());
-        if (!pass) {
-            throw new BizException("密码错误");
-        }
+        accountService.signIn(cmd.getName(), cmd.getPassword());
         return Response.buildSuccess();
     }
 
     @Override
     public Response signOut(AccountSignOutCmd cmd) {
-        return null;
+        throw new BizException("功能未实现");
     }
 }
