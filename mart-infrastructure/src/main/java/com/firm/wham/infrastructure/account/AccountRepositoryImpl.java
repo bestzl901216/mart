@@ -7,6 +7,8 @@ import com.firm.wham.domain.account.AccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 /**
  * @author ricardo zhou
  */
@@ -18,10 +20,8 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     @Override
     public AccountEntity getBy(String name) {
-        AccountDO accountDO = accountGateway.findBy(name);
-        if (accountDO == null) {
-            throw new BizException("账号信息不存在");
-        }
+        Optional<AccountDO> optional = accountGateway.findBy(name);
+        AccountDO accountDO = optional.orElseThrow(() ->new BizException("账号信息不存在"));
         return Convert.convert(AccountEntity.class, accountDO);
     }
 }

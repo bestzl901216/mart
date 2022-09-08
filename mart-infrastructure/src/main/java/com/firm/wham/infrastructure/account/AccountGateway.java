@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 /**
  * @author ricardo zhou
  */
@@ -20,12 +22,13 @@ public class AccountGateway {
      * @param name 账号名
      * @return 账号信息
      */
-    public AccountDO findBy(String name) {
+    public Optional<AccountDO> findBy(String name) {
+        Optional<AccountDO> optional = Optional.empty();
         if (StrUtil.isBlank(name)) {
-            return null;
+            return optional;
         }
         LambdaQueryWrapper<AccountDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AccountDO::getName, name);
-        return accountMapper.selectOne(queryWrapper);
+        return Optional.ofNullable(accountMapper.selectOne(queryWrapper));
     }
 }
