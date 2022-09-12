@@ -1,6 +1,5 @@
 package com.firm.wham.domain.account;
 
-import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
 import lombok.Data;
 
@@ -28,9 +27,5 @@ public class AccountEntity {
         this.updater = creator;
         this.updateTime = createTime;
         this.version = 1;
-    }
-
-    public boolean verifyPassword(String password) {
-        return StrUtil.isNotBlank(password) && this.md5Password.equals(SecureUtil.md5(password));
     }
 }
