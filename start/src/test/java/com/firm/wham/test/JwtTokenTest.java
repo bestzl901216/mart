@@ -1,8 +1,8 @@
 package com.firm.wham.test;
 
 import com.alibaba.cola.exception.BizException;
+import com.firm.wham.domain.account.JwtTokenGenerator;
 import com.firm.wham.starter.Application;
-import com.firm.wham.starter.config.security.JwtTokenGenerator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

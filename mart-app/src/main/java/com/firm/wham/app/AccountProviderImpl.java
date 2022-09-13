@@ -2,6 +2,7 @@ package com.firm.wham.app;
 
 import com.alibaba.cola.catchlog.CatchAndLog;
 import com.alibaba.cola.dto.Response;
+import com.alibaba.cola.dto.SingleResponse;
 import com.alibaba.cola.exception.BizException;
 import com.firm.wham.client.api.AccountProvider;
 import com.firm.wham.client.dto.AccountSignInCmd;
@@ -28,9 +29,9 @@ public class AccountProviderImpl implements AccountProvider {
     }
 
     @Override
-    public Response signIn(AccountSignInCmd cmd) {
-        accountService.signIn(cmd.getName(), cmd.getPassword());
-        return Response.buildSuccess();
+    public SingleResponse<String> signIn(AccountSignInCmd cmd) {
+        String token = accountService.signIn(cmd.getName(), cmd.getPassword());
+        return SingleResponse.of(token);
     }
 
     @Override

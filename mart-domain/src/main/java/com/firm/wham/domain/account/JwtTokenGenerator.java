@@ -1,6 +1,7 @@
-package com.firm.wham.starter.config.security;
+package com.firm.wham.domain.account;
 
 import cn.hutool.core.convert.Convert;
+import com.alibaba.cola.exception.Assert;
 import com.alibaba.cola.exception.BizException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;
@@ -29,13 +30,16 @@ public class JwtTokenGenerator {
     /**
      * JWT负载中拿到开头
      */
-    public static final String TOKEN_HEAD = "Bearer ";
+    private static final String TOKEN_HEAD = "Bearer ";
 
     /**
      * JWT签名使用的密钥
      */
-    public static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    private static final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
+    /**
+     * JWT签名解析器
+     */
     public static final JwtParser PARSER = Jwts.parserBuilder().setSigningKey(SECRET_KEY).build();
 
     /**
@@ -43,7 +47,7 @@ public class JwtTokenGenerator {
      */
     public String generateToken(String accountName) {
         Claims claims = generateClaims(accountName);
-        return Jwts.builder()
+        return TOKEN_HEAD + Jwts.builder()
                 .setClaims(claims)
                 .signWith(SECRET_KEY)
                 .compact();
@@ -55,6 +59,8 @@ public class JwtTokenGenerator {
      * @param token 客户端传入的token
      */
     public String parseAccountName(String token) {
+        Assert.isTrue(token.startsWith(TOKEN_HEAD), "无效token");
+        token = token.substring(TOKEN_HEAD.length());
         try {
             return PARSER.parseClaimsJws(token).getBody().getSubject();
         } catch (Exception e) {
@@ -63,12 +69,15 @@ public class JwtTokenGenerator {
     }
 
     private Claims generateClaims(String accountName) {
-        LocalDateTime issuedAt = LocalDateTime.now();
-        LocalDateTime expiration = issuedAt.plusDays(1);
         Claims claims = new DefaultClaims();
         claims.setSubject(accountName);
+
+        LocalDateTime issuedAt = LocalDateTime.now();
         claims.setIssuedAt(Convert.toDate(issuedAt));
+
+        LocalDateTime expiration = issuedAt.plusDays(1);
         claims.setExpiration(Convert.toDate(expiration));
+
         return claims;
     }
 }

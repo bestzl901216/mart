@@ -15,11 +15,12 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
 
-    public void signIn(String name, String password) {
+    public String signIn(String name, String password) {
         AccountEntity accountEntity = accountRepository.getBy(name);
         boolean pass = passwordEncoder.matches(password, accountEntity.getEncodedPassword());
         if (!pass) {
             throw new BizException("密码错误");
         }
+        return JwtTokenGenerator.generateToken(accountEntity.getName());
     }
 }

@@ -1,6 +1,6 @@
 package com.firm.wham.adapter.web;
 
-import com.alibaba.cola.dto.Response;
+import com.alibaba.cola.dto.SingleResponse;
 import com.firm.wham.client.api.AccountProvider;
 import com.firm.wham.client.dto.AccountSignInCmd;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +19,13 @@ public class AccountController {
 
     private final AccountProvider accountProvider;
 
+    @PostMapping("helloWorld")
+    public SingleResponse<String> helloWorld() {
+        return SingleResponse.of("hello world");
+    }
+
     @PostMapping("signIn")
-    public Response signIn(@RequestBody AccountSignInCmd cmd) {
+    public SingleResponse<String> signIn(@RequestBody AccountSignInCmd cmd) {
         return accountProvider.signIn(cmd);
     }
 }
