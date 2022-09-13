@@ -17,7 +17,7 @@ public class AccountService {
 
     public void signIn(String name, String password) {
         AccountEntity accountEntity = accountRepository.getBy(name);
-        boolean pass = passwordEncoder.matches(password, accountEntity.getMd5Password());
+        boolean pass = passwordEncoder.matches(password, accountEntity.getEncodedPassword());
         if (!pass) {
             throw new BizException("密码错误");
         }

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class AccountDO {
     private Integer id;
     private String name;
-    private String md5Password;
+    private String encodedPassword;
     private String creator;
     private LocalDateTime createTime;
     private String updater;

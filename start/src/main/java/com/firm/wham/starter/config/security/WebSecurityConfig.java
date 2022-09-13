@@ -40,7 +40,7 @@ public class WebSecurityConfig {
         return username -> {
             Optional<AccountDO> optional = accountGateway.findBy(username);
             AccountDO accountDO = optional.orElseThrow(() -> new UsernameNotFoundException("用户名或密码错误"));
-            return User.builder().username(accountDO.getName()).password(accountDO.getMd5Password()).authorities("TEST").build();
+            return User.builder().username(accountDO.getName()).password(accountDO.getEncodedPassword()).authorities("TEST").build();
         };
     }
 

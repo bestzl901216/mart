@@ -1,6 +1,5 @@
 package com.firm.wham.domain.account;
 
-import cn.hutool.crypto.SecureUtil;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -12,16 +11,16 @@ import java.time.LocalDateTime;
 public class AccountEntity {
     private Integer id;
     private String name;
-    private String md5Password;
+    private String encodedPassword;
     private String creator;
     private LocalDateTime createTime;
     private String updater;
     private LocalDateTime updateTime;
     private Integer version;
 
-    public AccountEntity(String name, String password, String operator) {
+    public AccountEntity(String name, String encodedPassword, String operator) {
         this.name = name;
-        this.md5Password = SecureUtil.md5(password);
+        this.encodedPassword = encodedPassword;
         this.creator = operator;
         this.createTime = LocalDateTime.now();
         this.updater = creator;
