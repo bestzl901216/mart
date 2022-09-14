@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -61,7 +62,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity, OncePerRequestFilter jwtTokenFilter) throws Exception {
         ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = httpSecurity.authorizeRequests();
         // 任何请求需要身份认证
         registry.antMatchers(whiteList)
@@ -80,7 +81,10 @@ public class WebSecurityConfig {
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler(martAccessDeniedHandler())
-                .authenticationEntryPoint(martAuthenticationEntryPoint());
+                .authenticationEntryPoint(martAuthenticationEntryPoint())
+                // 自定义过滤器必须早于security的验证过滤器
+                .and()
+                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 
