@@ -2,9 +2,9 @@ package com.firm.wham.starter.config.security;
 
 import cn.hutool.json.JSONUtil;
 import com.alibaba.cola.dto.Response;
-import com.firm.wham.domain.account.JwtTokenGenerator;
-import com.firm.wham.infrastructure.account.AccountDO;
-import com.firm.wham.infrastructure.account.AccountGateway;
+import com.firm.wham.domain.account.TokenUtil;
+import com.firm.wham.domain.security.Authentication;
+import com.firm.wham.domain.security.AuthenticationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,8 +17,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -43,18 +41,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class WebSecurityConfig {
 
-    private final AccountGateway accountGateway;
+    public static final String HEADER = "Authorization";
+    private final AuthenticationRepository authenticationRepository;
     @Value("${security.white.list}")
     private String[] whiteList;
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> {
-            Optional<AccountDO> optional = accountGateway.findBy(username);
-            AccountDO accountDO = optional.orElseThrow(() -> new UsernameNotFoundException("用户名或密码错误"));
-            return User.builder().username(accountDO.getName()).password(accountDO.getEncodedPassword()).authorities("TEST").build();
-        };
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -62,7 +52,7 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity, OncePerRequestFilter jwtTokenFilter) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity httpSecurity, OncePerRequestFilter tokenFilter) throws Exception {
         ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry = httpSecurity.authorizeRequests();
         // 任何请求需要身份认证
         registry.antMatchers(whiteList)
@@ -84,7 +74,7 @@ public class WebSecurityConfig {
                 .authenticationEntryPoint(martAuthenticationEntryPoint())
                 // 自定义过滤器必须早于security的验证过滤器
                 .and()
-                .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
         return httpSecurity.build();
     }
 
@@ -100,19 +90,21 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public OncePerRequestFilter jwtTokenFilter(UserDetailsService userDetailsService) {
+    public OncePerRequestFilter tokenFilter() {
         return new OncePerRequestFilter() {
             @Override
             protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-                String token = request.getHeader(JwtTokenGenerator.TOKEN_HEADER);
-                String accountName = token == null ? null : JwtTokenGenerator.parseAccountName(token);
-                log.info("jwt checking accountName:{}", accountName);
-                if (accountName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(accountName);
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                String token = request.getHeader(HEADER);
+                String accountName = token == null ? null : TokenUtil.parseAccountName(token);
+                log.info("checking accountName:{}", accountName);
+                Optional<Authentication> authenticationOptional = authenticationRepository.find(accountName);
+                if (authenticationOptional.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    Authentication authentication = authenticationOptional.get();
+                    UserDetails userDetails = User.builder().username(authentication.getAccountName()).password(authentication.getEncodedPassword()).authorities("TEST").build();
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     log.info("authenticated accountName:{}", accountName);
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
                 filterChain.doFilter(request, response);
             }
