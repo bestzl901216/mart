@@ -1,10 +1,7 @@
 package com.firm.wham.domain.account;
 
-import com.alibaba.cola.exception.BizException;
-import com.firm.wham.domain.security.Authentication;
-import com.firm.wham.domain.security.AuthenticationRepository;
+import com.firm.wham.domain.security.AuthenticationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,18 +11,17 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AccountService {
 
-    private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
-    private final AuthenticationRepository authenticationRepository;
+    private final AuthenticationService authenticationService;
 
     public String signIn(String name, String password) {
         AccountEntity accountEntity = accountRepository.getBy(name);
-        boolean pass = passwordEncoder.matches(password, accountEntity.getEncodedPassword());
-        if (!pass) {
-            throw new BizException("密码错误");
-        }
-        Authentication authentication = new Authentication(accountEntity);
-        authenticationRepository.add(authentication);
-        return TokenUtil.generateToken(authentication);
+        accountEntity.verifyPassword(password);
+        return authenticationService.authenticate(accountEntity);
+    }
+
+    public String signUp(String name, String password) {
+        AccountEntity accountEntity = new AccountEntity(name, password, "ricardo_zhou");
+        return authenticationService.authenticate(accountEntity);
     }
 }

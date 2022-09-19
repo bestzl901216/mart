@@ -17,8 +17,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -45,11 +43,6 @@ public class WebSecurityConfig {
     private final AuthenticationRepository authenticationRepository;
     @Value("${security.white.list}")
     private String[] whiteList;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity, OncePerRequestFilter tokenFilter) throws Exception {
@@ -100,7 +93,7 @@ public class WebSecurityConfig {
                 Optional<Authentication> authenticationOptional = authenticationRepository.find(accountName);
                 if (authenticationOptional.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
                     Authentication authentication = authenticationOptional.get();
-                    UserDetails userDetails = User.builder().username(authentication.getAccountName()).password(authentication.getEncodedPassword()).authorities("TEST").build();
+                    UserDetails userDetails = User.builder().username(authentication.getAccountName()).password(authentication.getEncodedPassword()).authorities(authentication.getAuthorities()).build();
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     log.info("authenticated accountName:{}", accountName);
