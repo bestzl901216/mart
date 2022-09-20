@@ -93,7 +93,7 @@ public class WebSecurityConfig {
                 Optional<Authentication> authenticationOptional = authenticationRepository.find(accountName);
                 if (authenticationOptional.isPresent() && SecurityContextHolder.getContext().getAuthentication() == null) {
                     Authentication authentication = authenticationOptional.get();
-                    UserDetails userDetails = User.builder().username(authentication.getAccountName()).password(authentication.getEncodedPassword()).authorities(authentication.getAuthorities()).build();
+                    UserDetails userDetails = User.builder().username(authentication.accountName()).password(authentication.accountEncodedPassword()).authorities(authentication.accountAuthorities()).build();
                     UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                     authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     log.info("authenticated accountName:{}", accountName);

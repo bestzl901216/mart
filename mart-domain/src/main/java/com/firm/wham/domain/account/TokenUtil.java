@@ -26,8 +26,8 @@ public class TokenUtil {
      * 根据账号名称生成token
      */
     public String generateToken(Authentication authentication) {
-        String accountName = authentication.getAccountName();
-        String signInTimeStr = LocalDateTimeUtil.formatNormal(authentication.getSignInTime());
+        String accountName = authentication.accountName();
+        String signInTimeStr = LocalDateTimeUtil.formatNormal(authentication.signInTime());
         List<String> list = List.of(accountName, signInTimeStr);
         return AES.encryptBase64(String.join(DELIMITER, list));
     }

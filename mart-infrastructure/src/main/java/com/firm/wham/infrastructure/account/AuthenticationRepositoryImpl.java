@@ -20,7 +20,7 @@ public class AuthenticationRepositoryImpl implements AuthenticationRepository {
 
     @Override
     public void add(Authentication authentication) {
-        map.put(authentication.getAccountName(), authentication);
+        map.put(authentication.accountName(), authentication);
     }
 
     @Override

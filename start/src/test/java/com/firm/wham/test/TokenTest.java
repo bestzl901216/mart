@@ -29,7 +29,7 @@ public class TokenTest {
         String accountName = TokenUtil.parseAccountName(token);
         Assertions.assertEquals("ricardo_zhou", accountName);
 
-        String errorToken = token + "A";
+        String errorToken = "A" + token;
         Assertions.assertThrows(BizException.class, () -> TokenUtil.parseAccountName(errorToken), "无效token");
     }
 }

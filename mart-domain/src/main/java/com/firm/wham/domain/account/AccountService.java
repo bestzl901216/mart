@@ -15,13 +15,14 @@ public class AccountService {
     private final AuthenticationService authenticationService;
 
     public String signIn(String name, String password) {
-        AccountEntity accountEntity = accountRepository.getBy(name);
-        accountEntity.verifyPassword(password);
-        return authenticationService.authenticate(accountEntity);
+        Account account = accountRepository.getAccount(name);
+        account.verifyPassword(password);
+        return authenticationService.authenticate(account);
     }
 
     public String signUp(String name, String password) {
-        AccountEntity accountEntity = new AccountEntity(name, password, "ricardo_zhou");
-        return authenticationService.authenticate(accountEntity);
+        Account account = new Account(name, password, "ricardo_zhou");
+        accountRepository.addAccount(account);
+        return authenticationService.authenticate(account);
     }
 }
